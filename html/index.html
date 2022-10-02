@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <title>Middleware</title>
+         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+            integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+            crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    </head>
+
+
+    <body>
+    <center>
+        <h1 >Taffala Bus Live Map</h1>
+    </center>
+        <div id="map" style="width:1300px; height:580px"></div>
+    </body>
+
+    <script>
+        var map = L.map('map').setView([35.812, 10.633], 15.5);
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: 'pk.eyJ1Ijoid2FlbG1hcHMiLCJhIjoiY2t4cGtrNXM4MGFuZDJwdGhta2Zpb3YyeSJ9.jJZJxYtviXJLk82dEUjxBw'
+        }).addTo(map);
+
+        mapMarkers1 = [];
+        mapMarkers2 = [];
+        mapMarkers3 = [];
+
+        var source = new EventSource('/topic/geodata_final123');
+        source.addEventListener('message', function(e){
+            console.log('message');
+            obj = JSON.parse(e.data);
+            console.log(obj);
+
+            if(obj.busline == '00001') {
+               for (var i = 0; i < mapMarkers1.length; i++) {
+                    map.removeLayer(mapMarkers1[i]);
+               }
+               marker1 = L.marker([obj.latitude, obj.longitude]).addTo(map);
+               mapMarkers1.push(marker1);
+            }
+
+            if(obj.busline == '00002') {
+               for (var i = 0; i < mapMarkers2.length; i++) {
+                    map.removeLayer(mapMarkers2[i]);
+               }
+               marker2 = L.marker([obj.latitude, obj.longitude]).addTo(map)
+               mapMarkers2.push(marker2);
+            }
+
+            if(obj.busline == '00003') {
+               for (var i = 0; i < mapMarkers3.length; i++) {
+                    map.removeLayer(mapMarkers3[i]);
+               }
+               marker3 = L.marker([obj.latitude, obj.longitude]).addTo(map)
+               mapMarkers3.push(marker3);
+            }
+        }, false);
+    </script>
+
+</html>
